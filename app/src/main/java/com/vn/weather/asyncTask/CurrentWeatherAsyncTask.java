@@ -2,6 +2,7 @@ package com.vn.weather.asyncTask;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.location.Location;
 import android.os.AsyncTask;
 
 import java.io.IOException;
@@ -25,7 +26,10 @@ public class CurrentWeatherAsyncTask extends AsyncTask<Void, Void, String> {
 
     private ProgressDialog mProgressDialog;
 
-    public CurrentWeatherAsyncTask(Context context) {
+    private Location location;
+
+    public CurrentWeatherAsyncTask(Context context, Location location) {
+        this.location = location;
         mProgressDialog = new ProgressDialog(context);
         mProgressDialog.setMessage("Loading.....");
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -37,11 +41,12 @@ public class CurrentWeatherAsyncTask extends AsyncTask<Void, Void, String> {
     protected String doInBackground(Void... params) {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://api.openweathermap.org/data/2.5/weather?lat=21&lon=106&APPID=24c4a4e0f6c39150ce79ea184df5ba58")
+                .url("http://api.openweathermap.org/data/2.5/weather?lat="+location.getLatitude()
+                        +"&lon="+location.getLongitude()+"&APPID=24c4a4e0f6c39150ce79ea184df5ba58")
                 .addHeader("Accept", "application/json")
                 .build();
         try{
-            Thread.sleep(3000);
+            Thread.sleep(1000);
             Response response = okHttpClient.newCall(request).execute();
             if(response.isSuccessful()){
                 String body = response.body().string();
