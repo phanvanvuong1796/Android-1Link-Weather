@@ -19,7 +19,7 @@
             android:layout_weight="0.6"
             android:gravity="center"
             android:text="Country"
-            android:textSize="50sp"/>
+            android:textSize="40sp"/>
 
         <TextView
             android:id="@+id/txt_status"
@@ -28,7 +28,7 @@
             android:layout_weight="0.4"
             android:gravity="center"
             android:text="status"
-            android:textSize="30sp"/>
+            android:textSize="35sp"/>
 
 
     </LinearLayout>

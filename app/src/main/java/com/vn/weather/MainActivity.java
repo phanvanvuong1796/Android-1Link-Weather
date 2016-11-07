@@ -2,6 +2,7 @@ package com.vn.weather;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
@@ -44,7 +46,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private TextView txtLastUpdate;
     private File file;
     private Location currentLocation;
+    private String path;
     public static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
+    private static final int REQUEST_WRITE_STORAGE = 112;
+
     private final long MIN_TIME_BW_UPDATES = 1000;
     // Met
     private final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 1;
@@ -59,9 +64,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         getCurrentLocation();
 
         Log.e("Long", String.valueOf(currentLocation.getLongitude()));
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/current_weather.json";
 
-        file = new File(path + "/Download/current_weather.json");
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
+            }
+        }
+
+        file = new File(path);
         Log.e("PATH", path);
         mCurrentWeather = new CurrentWeatherAsyncTask(this, currentLocation);
         mCurrentWeather.execute();
@@ -69,11 +81,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onFinish(String body) {
                 try {
+                    Log.e("Callback", body);
+
                     Gson gson = new Gson();
                     FileWriter fileWriter = new FileWriter(file);
                     fileWriter.write(body);
-                    WeatherEntity weatherEntity = new WeatherEntity();
+                    WeatherEntity weatherEntity;
                     weatherEntity = gson.fromJson(body, WeatherEntity.class);
+                    Log.e("eee", weatherEntity.getName());
                     txtCountry.setText(weatherEntity.getName());
                     txtStatus.setText(weatherEntity.getWeather().get(0).getDescription());
                     String temp = String.format("%.1f", (weatherEntity.getMain().getTemp() - 273));
@@ -81,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     txtHumidity.setText("Độ ẩm: " + weatherEntity.getMain().getHumidity() + " %");
                     txtSpeed.setText("Tốc độ: " + weatherEntity.getWind().getSpeed() + " m/s");
                     txtLastUpdate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(file.lastModified()));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -118,6 +133,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
                 break;
             }
+            case REQUEST_WRITE_STORAGE:{
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    file = new File(path);
+                }else{
+
+                }
+                break;
+            }
         }
     }
 
@@ -134,9 +157,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             try{
                 if (Build.VERSION.SDK_INT >= 23) {
                     int accessCoarsePermission
-                            = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+                            = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
                     int accessFinePermission
-                            = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+                            = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
 
                     if (accessCoarsePermission != PackageManager.PERMISSION_GRANTED
