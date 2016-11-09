@@ -176,8 +176,8 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         txtStatus.setText(weatherEntity.getWeather().get(0).getDescription());
         String temp = String.format("%.1f", (weatherEntity.getMain().getTemp() - 273));
         txtTemp.setText(temp + " °C");
-        txtHumidity.setText("Độ ẩm: " + weatherEntity.getMain().getHumidity() + " %");
-        txtSpeed.setText("Tốc độ: " + weatherEntity.getWind().getSpeed() + " m/s");
+        txtHumidity.append(" "+weatherEntity.getMain().getHumidity() + " %");
+        txtSpeed.append(" "+weatherEntity.getWind().getSpeed() + " m/s");
         txtLastUpdate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(file.lastModified()));
         //imageLoader.displayImage(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png", imgIcon);
         Picasso.with(this).load(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png")
@@ -201,6 +201,13 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        txtHumidity.setText(R.string.humidity_name);
+        txtSpeed.setText(R.string.speed_name);
     }
 
     @Override
