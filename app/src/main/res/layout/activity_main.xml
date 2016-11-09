@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vn.weather.MainActivity">
+    android:orientation="vertical"
+    tools:context="com.vn.weather.WeatherActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
@@ -21,22 +23,50 @@
             android:text="Country"
             android:textSize="40sp"/>
 
-        <TextView
-            android:id="@+id/txt_status"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.4"
-            android:gravity="center"
-            android:text="status"
-            android:textSize="35sp"/>
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_status"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="right|center_vertical"
+                android:text="status"
+                android:paddingRight="10dp"
+                android:textSize="25sp"/>
+
+            <ImageView
+                android:id="@+id/img_icon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:foregroundGravity="left|center_vertical"/>
+
+        </LinearLayout>
+
+
 
 
     </LinearLayout>
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        >
+
+
+    </ListView>
+
     <LinearLayout
 
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
@@ -47,7 +77,7 @@
             android:layout_weight="0.5"
             android:gravity="center"
             android:text="0"
-            android:textSize="50sp"/>
+            android:textSize="40sp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -83,4 +113,4 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

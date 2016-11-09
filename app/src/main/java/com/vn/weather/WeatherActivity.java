@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.vn.weather.asyncTask.CurrentWeatherAsyncTask;
 import com.vn.weather.entity.WeatherEntity;
 
@@ -38,7 +40,10 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
     private TextView txtSpeed;
     private TextView txtLastUpdate;
     private File file;
+    private ImageView imgIcon;
     private String path;
+    private ImageLoader imageLoader = ImageLoader.getInstance();
+    private final String urlImage = "http://openweathermap.org/img/w/";
     public static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private static final int REQUEST_WRITE_STORAGE = 112;
 
@@ -76,6 +81,7 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         txtHumidity = (TextView) findViewById(R.id.txt_humidity);
         txtSpeed = (TextView) findViewById(R.id.txt_speed);
         txtLastUpdate = (TextView) findViewById(R.id.txt_last_update);
+        imgIcon = (ImageView) findViewById(R.id.img_icon);
     }
 
     protected synchronized void buildGoogleApiClient(){
@@ -164,6 +170,7 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
                     txtHumidity.setText("Độ ẩm: " + weatherEntity.getMain().getHumidity() + " %");
                     txtSpeed.setText("Tốc độ: " + weatherEntity.getWind().getSpeed() + " m/s");
                     txtLastUpdate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(file.lastModified()));
+                    imageLoader.displayImage(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png", imgIcon);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
