@@ -10,41 +10,40 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.3"
+        android:layout_weight="0.2"
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/txt_country"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.6"
+            android:layout_height="wrap_content"
+
             android:gravity="center"
             android:text="Country"
             android:textSize="40sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="0.4"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txt_status"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.7"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
                 android:gravity="right|center_vertical"
+                android:layout_gravity="center"
                 android:text="status"
                 android:paddingRight="10dp"
                 android:textSize="25sp"/>
 
             <ImageView
                 android:id="@+id/img_icon"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.3"
-                android:foregroundGravity="left|center_vertical"/>
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical" />
 
         </LinearLayout>
 
@@ -66,15 +65,13 @@
 
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.3"
-        android:layout_alignParentBottom="true"
+        android:layout_weight="0.25"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/txt_temp"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:text="0"
             android:textSize="40sp"/>
@@ -82,7 +79,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.3"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            >
 
             <TextView
                 android:id="@+id/txt_humidity"
@@ -106,7 +104,7 @@
             android:id="@+id/txt_last_update"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.2"
+            android:layout_weight="0.3"
             android:text="aaaa"
             android:paddingLeft="10dp"
             android:gravity="left|center_vertical"/>

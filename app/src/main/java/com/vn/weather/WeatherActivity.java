@@ -21,7 +21,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 import com.vn.weather.asyncTask.CurrentWeatherAsyncTask;
 import com.vn.weather.entity.WeatherEntity;
 
@@ -42,7 +42,6 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
     private File file;
     private ImageView imgIcon;
     private String path;
-    private ImageLoader imageLoader = ImageLoader.getInstance();
     private final String urlImage = "http://openweathermap.org/img/w/";
     public static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private static final int REQUEST_WRITE_STORAGE = 112;
@@ -163,19 +162,28 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
                     WeatherEntity weatherEntity;
                     weatherEntity = gson.fromJson(body, WeatherEntity.class);
                     Log.e("eee", weatherEntity.getName());
-                    txtCountry.setText(weatherEntity.getName());
-                    txtStatus.setText(weatherEntity.getWeather().get(0).getDescription());
-                    String temp = String.format("%.1f", (weatherEntity.getMain().getTemp() - 273));
-                    txtTemp.setText(temp + " °C");
-                    txtHumidity.setText("Độ ẩm: " + weatherEntity.getMain().getHumidity() + " %");
-                    txtSpeed.setText("Tốc độ: " + weatherEntity.getWind().getSpeed() + " m/s");
-                    txtLastUpdate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(file.lastModified()));
-                    imageLoader.displayImage(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png", imgIcon);
+                    bindingWeatherData(weatherEntity);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+    }
+
+    private void bindingWeatherData(WeatherEntity weatherEntity) {
+        txtCountry.setText(weatherEntity.getName());
+        txtStatus.setText(weatherEntity.getWeather().get(0).getDescription());
+        String temp = String.format("%.1f", (weatherEntity.getMain().getTemp() - 273));
+        txtTemp.setText(temp + " °C");
+        txtHumidity.setText("Độ ẩm: " + weatherEntity.getMain().getHumidity() + " %");
+        txtSpeed.setText("Tốc độ: " + weatherEntity.getWind().getSpeed() + " m/s");
+        txtLastUpdate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(file.lastModified()));
+        //imageLoader.displayImage(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png", imgIcon);
+        Picasso.with(this).load(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png")
+                .fit()
+                .centerCrop()
+                .into(imgIcon);
     }
 
 
