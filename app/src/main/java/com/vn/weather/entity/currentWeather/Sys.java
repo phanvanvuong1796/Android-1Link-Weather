@@ -1,5 +1,5 @@
 
-package com.vn.weather.entity;
+package com.vn.weather.entity.currentWeather;
 
 
 public class Sys {

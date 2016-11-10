@@ -52,14 +52,16 @@
 
     </LinearLayout>
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_forecast_3h"
+        android:scrollbars="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"
         >
 
 
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
 

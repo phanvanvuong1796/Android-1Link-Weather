@@ -1,5 +1,5 @@
 
-package com.vn.weather.entity;
+package com.vn.weather.entity.currentWeather;
 
 import java.util.ArrayList;
 import java.util.List;

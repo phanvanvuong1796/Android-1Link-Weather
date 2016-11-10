@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,8 +24,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
+import com.vn.weather.adapter.Forecast3hAdapter;
 import com.vn.weather.asyncTask.CurrentWeatherAsyncTask;
-import com.vn.weather.entity.WeatherEntity;
+import com.vn.weather.entity.currentWeather.WeatherEntity;
+import com.vn.weather.entity.forecastWeather3h.WeatherFC3h;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -39,9 +43,11 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
     private TextView txtHumidity;
     private TextView txtSpeed;
     private TextView txtLastUpdate;
+    private RecyclerView mRecyclerView;
     private File file;
     private ImageView imgIcon;
     private String path;
+    public static final String STRING_CUT_JSON = "drop";
     private final String urlImage = "http://openweathermap.org/img/w/";
     public static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private static final int REQUEST_WRITE_STORAGE = 112;
@@ -61,6 +67,7 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
 
         path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/current_weather.json";
 
+        //Check self permission WRITE_EXTERNAL_STORAGE với android 6.0 trở lên
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED){
@@ -73,6 +80,9 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
 
     }
 
+    /**
+     *
+     */
     public void getView() {
         txtCountry = (TextView) findViewById(R.id.txt_country);
         txtStatus = (TextView) findViewById(R.id.txt_status);
@@ -81,6 +91,11 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         txtSpeed = (TextView) findViewById(R.id.txt_speed);
         txtLastUpdate = (TextView) findViewById(R.id.txt_last_update);
         imgIcon = (ImageView) findViewById(R.id.img_icon);
+        mRecyclerView = (RecyclerView) findViewById(R.id.list_forecast_3h);
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
     }
 
     protected synchronized void buildGoogleApiClient(){
@@ -155,14 +170,20 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
             public void onFinish(String body) {
                 try {
                     Log.e("Callback", body);
-
+                    String[] datas = body.split(STRING_CUT_JSON);
                     Gson gson = new Gson();
                     FileWriter fileWriter = new FileWriter(file);
-                    fileWriter.write(body);
+                    fileWriter.write(datas[0]);
                     WeatherEntity weatherEntity;
-                    weatherEntity = gson.fromJson(body, WeatherEntity.class);
+                    WeatherFC3h weatherFC3h;
+
+                    weatherEntity = gson.fromJson(datas[0], WeatherEntity.class);
+                    weatherFC3h = gson.fromJson(datas[1], WeatherFC3h.class);
+                    if(weatherFC3h != null){
+                        Log.e("NULL", "FC3h not Null");
+                    }
                     Log.e("eee", weatherEntity.getName());
-                    bindingWeatherData(weatherEntity);
+                    bindingWeatherData(weatherEntity, weatherFC3h);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -171,7 +192,7 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         });
     }
 
-    private void bindingWeatherData(WeatherEntity weatherEntity) {
+    private void bindingWeatherData(WeatherEntity weatherEntity, WeatherFC3h weatherFC3h) {
         txtCountry.setText(weatherEntity.getName());
         txtStatus.setText(weatherEntity.getWeather().get(0).getDescription());
         String temp = String.format("%.1f", (weatherEntity.getMain().getTemp() - 273));
@@ -179,11 +200,13 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         txtHumidity.append(" "+weatherEntity.getMain().getHumidity() + " %");
         txtSpeed.append(" "+weatherEntity.getWind().getSpeed() + " m/s");
         txtLastUpdate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(file.lastModified()));
-        //imageLoader.displayImage(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png", imgIcon);
         Picasso.with(this).load(urlImage+weatherEntity.getWeather().get(0).getIcon()+".png")
                 .fit()
                 .centerCrop()
                 .into(imgIcon);
+        Log.e("TIME", weatherFC3h.getList().get(0).getDtTxt()+"");
+        Forecast3hAdapter mForecast3hAdapter = new Forecast3hAdapter(weatherFC3h.getList().subList(3, 10), this);
+        mRecyclerView.setAdapter(mForecast3hAdapter);
     }
 
 

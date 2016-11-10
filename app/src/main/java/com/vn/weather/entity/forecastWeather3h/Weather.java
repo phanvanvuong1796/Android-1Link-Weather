@@ -1,5 +1,6 @@
 
-package com.vn.weather.entity;
+package com.vn.weather.entity.forecastWeather3h;
+
 
 public class Weather {
 

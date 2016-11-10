@@ -6,6 +6,8 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.vn.weather.WeatherActivity;
+
 import java.io.IOException;
 
 import okhttp3.OkHttpClient;
@@ -28,6 +30,7 @@ public class CurrentWeatherAsyncTask extends AsyncTask<Void, Void, String> {
     private ProgressDialog mProgressDialog;
 
     private Location location;
+    private String body;
 
     public CurrentWeatherAsyncTask(Context context, Location location) {
         this.location = location;
@@ -41,14 +44,23 @@ public class CurrentWeatherAsyncTask extends AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... params) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder()
+        Request request1 = new Request.Builder()
                 .url("http://api.openweathermap.org/data/2.5/weather?lat="+location.getLatitude()+"&lon="+location.getLongitude()+"&APPID=24c4a4e0f6c39150ce79ea184df5ba58")
                 .addHeader("Accept", "application/json")
                 .build();
+        Request request2 = new Request.Builder()
+                .url("http://api.openweathermap.org/data/2.5/forecast?lat="+location.getLatitude()+"&lon="+location.getLongitude()+"&appid=24c4a4e0f6c39150ce79ea184df5ba58")
+                .addHeader("Accept", "application/json")
+                .build();
         try{
-            Response response = okHttpClient.newCall(request).execute();
-            if(response.isSuccessful()){
-                String body = response.body().string();
+            Response response1 = okHttpClient.newCall(request1).execute();
+            if(response1.isSuccessful()){
+                body = response1.body().string();
+                Log.e("Json", body);
+            }
+            Response response2 = okHttpClient.newCall(request2).execute();
+            if(response2.isSuccessful()){
+                body = body+ WeatherActivity.STRING_CUT_JSON+response2.body().string();
                 Log.e("Json", body);
                 return body;
             }
