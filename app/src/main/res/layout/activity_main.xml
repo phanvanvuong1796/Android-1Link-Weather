@@ -7,6 +7,9 @@
     android:orientation="vertical"
     tools:context="com.vn.weather.WeatherActivity">
 
+    <include layout="@layout/toolbars"
+        android:id="@+id/tlb_weather_main"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -14,7 +14,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +68,7 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
             buildGoogleApiClient();
         }
 
+
         path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/current_weather.json";
 
         //Check self permission WRITE_EXTERNAL_STORAGE với android 6.0 trở lên
@@ -84,6 +88,11 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
      *
      */
     public void getView() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tlb_weather_main);
+        setSupportActionBar(toolbar);
+
+
+
         txtCountry = (TextView) findViewById(R.id.txt_country);
         txtStatus = (TextView) findViewById(R.id.txt_status);
         txtTemp = (TextView) findViewById(R.id.txt_temp);
@@ -149,6 +158,21 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         return currentLocation;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.item_toolbars, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.item_refresh:
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -205,7 +229,7 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
                 .centerCrop()
                 .into(imgIcon);
         Log.e("TIME", weatherFC3h.getList().get(0).getDtTxt()+"");
-        Forecast3hAdapter mForecast3hAdapter = new Forecast3hAdapter(weatherFC3h.getList().subList(3, 10), this);
+        Forecast3hAdapter mForecast3hAdapter = new Forecast3hAdapter(weatherFC3h.getList().subList(2, 10), this);
         mRecyclerView.setAdapter(mForecast3hAdapter);
     }
 
