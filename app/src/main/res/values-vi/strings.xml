@@ -2,4 +2,7 @@
     <string name="app_name">Thời tiết</string>
     <string name="humidity_name">Độ ẩm: </string>
     <string name="speed_name">Tốc độ: </string>
+    <string name="clouds_name">Mây: </string>
+    <string name="daily_forecast">Dự báo Hàng ngày</string>
+    <string name="today_name">Hôm nay</string>
 </resources>

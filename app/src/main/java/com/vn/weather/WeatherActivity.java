@@ -2,6 +2,7 @@ package com.vn.weather;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -30,6 +31,7 @@ import com.squareup.picasso.Picasso;
 import com.vn.weather.adapter.Forecast3hAdapter;
 import com.vn.weather.asyncTask.CurrentWeatherAsyncTask;
 import com.vn.weather.entity.currentWeather.WeatherEntity;
+import com.vn.weather.entity.forecastWeather10d.WeatherFC10d;
 import com.vn.weather.entity.forecastWeather3h.WeatherFC3h;
 
 import java.io.File;
@@ -52,8 +54,10 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
     private String path;
     public static final String STRING_CUT_JSON = "drop";
     private final String urlImage = "http://openweathermap.org/img/w/";
-    public static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
+    private static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private static final int REQUEST_WRITE_STORAGE = 112;
+    public static final String LOCATION_DATA = "LocationData";
+    private Location currentLocation;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -90,8 +94,6 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
     public void getView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.tlb_weather_main);
         setSupportActionBar(toolbar);
-
-
 
         txtCountry = (TextView) findViewById(R.id.txt_country);
         txtStatus = (TextView) findViewById(R.id.txt_status);
@@ -139,8 +141,7 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         }
     }
 
-    private Location getCurrentLocation() {
-        Location currentLocation = null;
+    private void getCurrentLocation() {
         try{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -155,7 +156,6 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         }catch (SecurityException e){
             Toast.makeText(this, "Show My Location Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        return currentLocation;
     }
 
     @Override
@@ -168,15 +168,22 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.item_refresh:
-
+                onResume();
+                onConnected(new Bundle());
                 break;
+            case R.id.item_forecast:{
+                Intent intent = new Intent(this, WeatherFC10Activity.class);
+                intent.putExtra(LOCATION_DATA, new double[]{currentLocation.getLatitude(), currentLocation.getLongitude()});
+                startActivity(intent);
+                break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Location currentLocation = getCurrentLocation();
+        getCurrentLocation();
         Log.e("Long", currentLocation.getLongitude()+"");
         Log.e("Lat", currentLocation.getLatitude()+"");
 
