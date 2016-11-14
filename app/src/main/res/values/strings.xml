@@ -5,4 +5,5 @@
     <string name="clouds_name">Clouds: </string>
     <string name="daily_forecast">Daily Forecast</string>
     <string name="today_name">Today</string>
+    <string name="network_unavailable">Network Unavailable</string>
 </resources>

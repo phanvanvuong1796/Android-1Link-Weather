@@ -5,6 +5,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,9 +36,14 @@ import com.vn.weather.entity.currentWeather.WeatherEntity;
 import com.vn.weather.entity.forecastWeather10d.WeatherFC10d;
 import com.vn.weather.entity.forecastWeather3h.WeatherFC3h;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Scanner;
 
 
 public class WeatherActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -172,9 +179,15 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
                 onConnected(new Bundle());
                 break;
             case R.id.item_forecast:{
-                Intent intent = new Intent(this, WeatherFC10Activity.class);
-                intent.putExtra(LOCATION_DATA, new double[]{currentLocation.getLatitude(), currentLocation.getLongitude()});
-                startActivity(intent);
+                if(!checkNetworkState()){
+                    Toast.makeText(this, getResources().getString(R.string.network_unavailable),
+                            Toast.LENGTH_LONG).show();
+                }else{
+                    Intent intent = new Intent(this, WeatherFC10Activity.class);
+                    intent.putExtra(LOCATION_DATA, new double[]{currentLocation.getLatitude(), currentLocation.getLongitude()});
+                    startActivity(intent);
+                }
+
                 break;
             }
         }
@@ -188,28 +201,35 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         Log.e("Lat", currentLocation.getLatitude()+"");
 
         getWeatherData(currentLocation);
-
-
     }
 
     private void getWeatherData(Location currentLocation) {
+
         mCurrentWeather = new CurrentWeatherAsyncTask(this, currentLocation);
+        mCurrentWeather.setCheckNetwork(checkNetworkState());
         Log.e("AsyncTask", "Running");
         mCurrentWeather.execute();
         mCurrentWeather.setCallBack(new CurrentWeatherAsyncTask.CallBack() {
             @Override
             public void onFinish(String body) {
                 try {
-                    Log.e("Callback", body);
-                    String[] datas = body.split(STRING_CUT_JSON);
                     Gson gson = new Gson();
-                    FileWriter fileWriter = new FileWriter(file);
-                    fileWriter.write(datas[0]);
+                    Log.e("Callback", body);
+                    String[] data = body.split(STRING_CUT_JSON);
                     WeatherEntity weatherEntity;
-                    WeatherFC3h weatherFC3h;
+                    WeatherFC3h weatherFC3h = null;
+                    if(!checkNetworkState()){
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.network_unavailable)
+                                , Toast.LENGTH_LONG).show();
+                    }else{
+                        FileWriter fileWriter = new FileWriter(file);
+                        fileWriter.write(body);
+                        weatherFC3h = gson.fromJson(data[1], WeatherFC3h.class);
+                    }
+                    Log.e("1EEEEE", data[1]);
+                    weatherEntity = gson.fromJson(data[0], WeatherEntity.class);
+                    Log.e("City", weatherEntity.getName());
 
-                    weatherEntity = gson.fromJson(datas[0], WeatherEntity.class);
-                    weatherFC3h = gson.fromJson(datas[1], WeatherFC3h.class);
                     if(weatherFC3h != null){
                         Log.e("NULL", "FC3h not Null");
                     }
@@ -270,5 +290,15 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
         if(mGoogleApiClient.isConnected()){
             mGoogleApiClient.disconnect();
         }
+    }
+
+    public boolean checkNetworkState(){
+        boolean check = true;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED &&
+                connectivityManager.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED){
+            check = false;
+        }
+        return check;
     }
 }
