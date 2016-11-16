@@ -219,8 +219,8 @@ public class WeatherActivity extends AppCompatActivity implements GoogleApiClien
                     WeatherEntity weatherEntity;
                     WeatherFC3h weatherFC3h = null;
                     if(!checkNetworkState()){
-                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.network_unavailable)
-                                , Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),
+                                getResources().getString(R.string.network_unavailable), Toast.LENGTH_LONG).show();
                     }else{
                         FileWriter fileWriter = new FileWriter(file);
                         fileWriter.write(body);
